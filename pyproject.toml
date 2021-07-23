@@ -1,0 +1,45 @@
+[tool.poetry]
+description = ""
+authors = ["Jason Walton <jason@devhour.co>"]
+license = "MIT"
+name = "bofa-crawler"
+version = "0.1.0"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+selenium = "^3.141.0"
+beautifulsoup4 = "^4.9.3"
+
+
+[tool.poetry.dev-dependencies]
+black = "^21.6b0"
+coverage = "^5.5"
+flake8 = "^3.9.2"
+flake8-docstrings = "^1.6.0"
+flake8-import-order = "^0.18.1"
+flake8-tidy-imports = "^4.3.0"
+isort = "^5.9.2"
+pytest = "^6.2.4"
+
+pytest-mock = "^3.6.1"
+taskipy = "^1.8.1"
+rope = "^0.19.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.taskipy.tasks]
+start = "python -m bofa_crawler"
+test = "coverage run -m pytest"
+precommit = "pre-commit install"
+lint = "pre-commit run --all-files"
+
+[tool.isort]
+profile = "black"
+known_first_party = ["bofa_crawler", "tests"]
+
+[tool.black]
+line-length = 80
+target-version = ['py37']
+include = '\.pyi?$'
