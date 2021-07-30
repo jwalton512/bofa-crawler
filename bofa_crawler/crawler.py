@@ -69,7 +69,7 @@ class BofaCrawler:
             if not wait_until(
                 self.browser, [name_selector, account.name], "TPE"
             ):
-                return
+                continue
             parser = get_account_parser(account, self.browser.page_source)
             account.balance = parser.get_balance()
             account.transactions = parser.get_transactions()
