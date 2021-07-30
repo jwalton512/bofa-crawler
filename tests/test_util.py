@@ -4,7 +4,12 @@ import pytest
 from selenium.common.exceptions import TimeoutException, WebDriverException
 from selenium.webdriver import Firefox
 
-from bofa_crawler.util import dollars_to_cents, get_current_url, navigate
+from bofa_crawler.util import (
+    dollars_to_cents,
+    get_current_url,
+    html_whitespace,
+    navigate,
+)
 
 
 def test_get_current_url_using_execute_script():
@@ -73,6 +78,14 @@ def test_navigate_raises_exception_after_7_timeouts(sleep):
 )
 def test_dollars_to_cents(input, expected):
     assert dollars_to_cents(input) == expected
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [("foo  bar", "foo bar"), ("  foo  ", "foo"), (" foo    bar", "foo bar")],
+)
+def test_html_whitespace(input, expected):
+    assert html_whitespace(input) == expected
 
 
 @pytest.fixture

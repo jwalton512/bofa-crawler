@@ -122,3 +122,8 @@ def dollars_to_cents(dollars) -> int:
         dollars = re.sub("[^0-9-.]", "", dollars)
 
     return int(float(dollars) * 100)
+
+
+def html_whitespace(text: str) -> str:
+    """Return `text` with whitepsace treated as it would be in HTML."""
+    return re.sub("\s+", " ", text.strip())  # noqa: W605

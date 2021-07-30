@@ -5,7 +5,7 @@ from bs4.element import PageElement
 
 from bofa_crawler.bank import Account, Transaction
 from bofa_crawler.constants import SECURE_BASE_URL
-from bofa_crawler.util import dollars_to_cents
+from bofa_crawler.util import dollars_to_cents, html_whitespace
 
 
 class HtmlParser(ABC):
@@ -22,7 +22,7 @@ class AccountListParser(HtmlParser):
         account_item_elems = self.soup.select(".Accounts .AccountItem")
         for account_item_elem in account_item_elems:
             name_elem = account_item_elem.select_one(".AccountName > a")
-            name = name_elem.text if name_elem else None
+            name = html_whitespace(name_elem.text) if name_elem else None
             if name in accounts:
                 account_type = self._get_account_type(account_item_elem)
                 link = SECURE_BASE_URL + name_elem.get("href")
