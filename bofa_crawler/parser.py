@@ -121,8 +121,56 @@ class CreditCardParser(AccountParser):
                 return transaction.ending_balance
 
 
+class DepositParser(AccountParser):
+    def get_balance(self):
+        """Retrieve account balance."""
+        balance_selector = ".ad-acct-summary-module-deposit-skin .TL_NPI_Amt"
+        balance_elem = self.soup.select_one(balance_selector)
+        if balance_elem:
+            return dollars_to_cents(balance_elem.text)
+
+    def get_transactions(self):
+        """Retrieve recent transactions."""
+
+        def is_transaction(class_):
+            return class_ in ["record", "in-transit-record"]
+
+        transactions = []
+        trans_table = self.soup.select_one("table.transaction-records > tbody")
+        trans_row_elems = trans_table.find_all("tr", class_=is_transaction)
+        for trans_row in trans_row_elems:
+            is_pending = "in-transit-record" in trans_row["class"]
+            amount = self._get_transaction_amount(trans_row)
+            description = self._get_transaction_description(trans_row)
+            ending_balance = self._get_transaction_ending_balance(trans_row)
+            transaction = Transaction(
+                description, amount, is_pending, ending_balance
+            )
+            transactions.append(transaction)
+
+        return transactions
+
+    def _get_transaction_amount(self, trans_row: PageElement):
+        selector = "td.amount"
+        elem = trans_row.select_one(selector)
+        if elem:
+            return dollars_to_cents(elem.text)
+
+    def _get_transaction_description(self, trans_row: PageElement):
+        selector = "td.description"
+        elem = trans_row.select_one(selector)
+        if elem:
+            return elem.text.strip()
+
+    def _get_transaction_ending_balance(self, trans_row: PageElement):
+        selector = "td.balance"
+        elem = trans_row.select_one(selector)
+        if elem:
+            return dollars_to_cents(elem.text)
+
+
 def get_account_parser(account: Account, page_source: str):
     """Get parser instance for the account based on type."""
-    parsers = {"CreditCard": CreditCardParser}
+    parsers = {"CreditCard": CreditCardParser, "Deposit": DepositParser}
 
     return parsers[account.account_type](account, page_source)
