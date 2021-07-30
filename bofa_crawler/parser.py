@@ -157,10 +157,15 @@ class DepositParser(AccountParser):
             return dollars_to_cents(elem.text)
 
     def _get_transaction_description(self, trans_row: PageElement):
-        selector = "td.description"
-        elem = trans_row.select_one(selector)
-        if elem:
-            return elem.text.strip()
+        td_selector = "td.description"
+        cleared_desc_selector = ".transTitleForEditDesc"
+        td = trans_row.select_one(td_selector)
+        if td:
+            cleared_desc = td.select_one(cleared_desc_selector)
+            if cleared_desc:
+                return cleared_desc.text.strip()
+
+            return td.text.strip()
 
     def _get_transaction_ending_balance(self, trans_row: PageElement):
         selector = "td.balance"
